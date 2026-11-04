@@ -168,17 +168,26 @@ function localSudaneseNormalizer(text) {
   return out;
 }
 
-async function callGeminiNormalize(text, customKey) {
+async function callGeminiNormalize(text, customKey, genre = 'chat_intimacy') {
   const env = loadEnv();
   const apiKey = (customKey || env.GEMINI_API_KEY || '').trim();
   if (!apiKey) {
     throw new Error('مفتاح Gemini API غير موجود. يرجى إضافته في الإعدادات أو في ملف .env');
   }
 
+  const genreHints = {
+    formal_media: 'السياق المطلوب: [إعلام وإذاعة رصينة - نبرة تلفزيونية وإذاعية راقية كمذيعي سودانية 24، والإعلامية سلمى سيد، وإذاعة PRO FM]. وقار، مخارج حروف واضحة، هدوء، لغة وسطية راقية.',
+    chat_intimacy: 'السياق المطلوب: [ونسة وفضفضة وحوار يومي حميم - البيت والشارع والدراما السودانية ولقاء ميديا]. تعبيرات الألفة، المجاملات الصادقة، العفوية والدفء الأسري.',
+    intellectual_podcast: 'السياق المطلوب: [بودكاست ونقاش فكري وتاريخي متزن - مثل بودكاست السودان، الفاتح عروة، بريك لوجيك]. وقفات تفكير هادئة، رزانة في الطرح، استرسال واثق.',
+    comedy: 'السياق المطلوب: [كوميديا وقفشات ومفارقة شعبية - مثل شيلبان وأبوبكر فيصل]. إيقاع متفاعل، قفشات، مدود تعبيرية ساخرة.',
+    narrative_audiobook: 'السياق المطلوب: [سرد قصصي ورواية وكتب صوتية كاملة]. صوت الحكاء الهادئ، استرسال انسيابي، تلوين نغمي هادئ يشد المستمع.'
+  };
+
+  const contextInstruction = genreHints[genre] || genreHints.chat_intimacy;
   const rules = loadRules();
   const payload = JSON.stringify({
     systemInstruction: {
-      parts: [{ text: rules }]
+      parts: [{ text: `${rules}\n\n${contextInstruction}` }]
     },
     contents: [
       {
@@ -494,7 +503,7 @@ const server = http.createServer(async (req, res) => {
         return sendJson(res, 400, { ok: false, error: 'يرجى إدخال نص لتحويله' });
       }
       try {
-        const result = await callGeminiNormalize(inputText, body.geminiKey);
+        const result = await callGeminiNormalize(inputText, body.geminiKey, body.genre);
         return sendJson(res, 200, {
           ok: true,
           phoneticText: result.phoneticText,

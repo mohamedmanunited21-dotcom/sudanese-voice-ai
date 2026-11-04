@@ -164,6 +164,7 @@
       </div>
     </div>
     <div class="header-actions">
+      <a href="https://colab.research.google.com/github/mohamedmanunited21-dotcom/sudanese-voice-ai/blob/main/Sudanese_Linguistic_AI_Trainer.ipynb" target="_blank" class="btn btn-teal btn-sm" style="text-decoration:none;background:linear-gradient(135deg, #f59e0b, #d97706);color:#fff">🚀 تشغيل Google Colab المجاني</a>
       <span class="pill" id="keyBadge">✅ وضع مجاني بالكامل</span>
       <button class="btn btn-light btn-sm" onclick="openModal('keysModal')">⚙️ المفاتيح</button>
       <button class="btn btn-light btn-sm" onclick="openModal('rulesModal')">📜 قواعد النطق</button>
@@ -184,6 +185,16 @@
         <span class="chip" onclick="setSample('والله يا أخي الظروف هذه الأيام صعبة، لكن إن شاء الله القادم أفضل.')">ونسة</span>
       </div>
       <textarea id="rawInput">ماذا تريد أن تفعل الآن؟ هذا الأمر جيد جداً وسيساعدنا كثيراً، ويجب علينا الذهاب مبكراً لكي نلحق.</textarea>
+            <div>
+        <label class="lbl">نوع وسياق المحادثة (السردية السودانية المستهدفة):</label>
+        <select id="sudaneseGenre">
+          <option value="formal_media">🎙️ إعلام وإذاعة رصينة (لغة سودانية راقية - سودانية 24، سلمى سيد، PRO FM)</option>
+          <option value="chat_intimacy" selected>☕ ونسة وفضفضة وحوار يومي (تعبيرات دارجة وحميمية - البيت والشارع)</option>
+          <option value="intellectual_podcast">🧠 بودكاست ونقاش فكري وتاريخي (تأني ورزانة ووقفات تفكير)</option>
+          <option value="comedy">😂 كوميديا وقفشات ومفارقة شعبية (إيقاع سريع وتعبير مبالغ فيه)</option>
+          <option value="narrative_audiobook">📖 سرد قصصي وكتب ومسلسلات صوتية (رواية هادئة واسترسال دافئ)</option>
+        </select>
+      </div>
       <button id="normBtn" class="btn btn-teal btn-wide" onclick="handleNormalize()">✨ حوّل وشكّل باللهجة السودانية</button>
       <div id="normStatus" class="status"></div>
     </div>
@@ -432,7 +443,7 @@
     if (!text) return status('normStatus', 'error', 'اكتب نصاً أولاً.');
     $('normBtn').disabled = true; status('normStatus', 'info', '⏳ جاري التحويل والتشكيل...');
     try {
-      const d = await (await fetch('/api/normalize', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ text }) })).json();
+      const d = await (await fetch('/api/normalize', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ text, genre: document.getElementById("sudaneseGenre") ? document.getElementById("sudaneseGenre").value : "chat_intimacy" }) })).json();
       if (!d.ok) throw new Error(d.error);
       $('phonetic').value = d.phoneticText;
       d.warning ? status('normStatus', 'info', 'تم بالمحوّل المحلي (Gemini مشغول حالياً، حاول مرة أخرى بعد قليل)')
