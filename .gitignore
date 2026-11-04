@@ -1,0 +1,13 @@
+.env
+.env.*
+__pycache__/
+*.pyc
+node_modules/
+output/
+*.webm
+*.part
+*.tar.gz
+*.zip
+# Keep references small or ignore large inputs
+inputs/
+voice_samples/

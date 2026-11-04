@@ -1,0 +1,513 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>استوديو الصوت السوداني | Sudanese Voice Studio</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;800&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg: #fdfaf4;
+      --card: #ffffff;
+      --soft: #f3f8f7;
+      --border: #e6ece9;
+      --teal: #0fa3a3;
+      --teal-dark: #0b7f80;
+      --sky: #4aa8e8;
+      --coral: #ff8a65;
+      --sun: #ffc857;
+      --text: #24343a;
+      --muted: #6b7f86;
+      --ok: #1f9d6a;
+      --err: #d9534f;
+      --shadow: 0 10px 30px rgba(36, 52, 58, 0.07);
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: 'Cairo', sans-serif;
+      color: var(--text);
+      min-height: 100vh;
+      background:
+        radial-gradient(circle at 8% 0%, #d9f3f0 0%, transparent 38%),
+        radial-gradient(circle at 95% 10%, #ffe9dc 0%, transparent 35%),
+        radial-gradient(circle at 50% 100%, #fff3cf 0%, transparent 40%),
+        var(--bg);
+      padding: 24px 16px 60px;
+      line-height: 1.7;
+    }
+    .container { max-width: 1140px; margin: 0 auto; }
+
+    header {
+      display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between;
+      gap: 16px; margin-bottom: 22px; padding: 18px 24px;
+      background: rgba(255,255,255,0.85); border: 1px solid var(--border);
+      border-radius: 22px; box-shadow: var(--shadow); backdrop-filter: blur(10px);
+    }
+    .brand { display: flex; align-items: center; gap: 14px; }
+    .logo {
+      width: 54px; height: 54px; border-radius: 16px; font-size: 28px;
+      display: flex; align-items: center; justify-content: center;
+      background: linear-gradient(135deg, var(--teal), var(--sky));
+      box-shadow: 0 8px 18px rgba(15,163,163,0.3);
+    }
+    .brand h1 { font-size: 1.45rem; font-weight: 800; }
+    .brand p { font-size: 0.9rem; color: var(--muted); }
+    .header-actions { display: flex; gap: 10px; flex-wrap: wrap; align-items: center; }
+
+    .pill {
+      padding: 6px 14px; border-radius: 999px; font-size: 0.82rem; font-weight: 700;
+      background: #e3f7ee; color: var(--ok); border: 1px solid #bfead6;
+    }
+
+    .btn {
+      font-family: inherit; font-weight: 700; font-size: 0.95rem;
+      padding: 11px 18px; border-radius: 14px; border: 1px solid transparent;
+      cursor: pointer; transition: all .18s ease;
+      display: inline-flex; align-items: center; justify-content: center; gap: 8px;
+    }
+    .btn:disabled { opacity: .55; cursor: not-allowed; }
+    .btn-teal { background: linear-gradient(135deg, var(--teal), var(--sky)); color: #fff; box-shadow: 0 6px 16px rgba(15,163,163,.28); }
+    .btn-coral { background: linear-gradient(135deg, var(--coral), #ffb347); color: #fff; box-shadow: 0 6px 16px rgba(255,138,101,.3); }
+    .btn-teal:hover:not(:disabled), .btn-coral:hover:not(:disabled) { transform: translateY(-2px); }
+    .btn-light { background: #fff; color: var(--text); border-color: var(--border); }
+    .btn-light:hover { background: var(--soft); border-color: var(--teal); }
+    .btn-sm { padding: 6px 12px; font-size: 0.82rem; border-radius: 10px; }
+    .btn-wide { width: 100%; padding: 14px; font-size: 1.02rem; }
+
+    .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+    @media (max-width: 900px) { .grid { grid-template-columns: 1fr; } }
+
+    .card {
+      background: var(--card); border: 1px solid var(--border); border-radius: 22px;
+      padding: 22px; box-shadow: var(--shadow);
+      display: flex; flex-direction: column; gap: 14px;
+    }
+    .card-head { display: flex; justify-content: space-between; align-items: center; gap: 10px; }
+    .card-title { font-weight: 800; font-size: 1.08rem; display: flex; align-items: center; gap: 10px; }
+    .num {
+      width: 30px; height: 30px; border-radius: 10px; color: #fff; font-weight: 800;
+      display: inline-flex; align-items: center; justify-content: center; font-size: .9rem;
+    }
+    .n1 { background: var(--teal); } .n2 { background: var(--sky); } .n3 { background: var(--coral); }
+
+    textarea, select, input[type=text], input[type=password] {
+      width: 100%; font-family: inherit; font-size: 1rem; color: var(--text);
+      background: var(--soft); border: 1.5px solid var(--border); border-radius: 14px;
+      padding: 12px 14px; transition: border-color .2s, background .2s;
+    }
+    textarea:focus, select:focus, input:focus { outline: none; border-color: var(--teal); background: #fff; }
+    textarea { min-height: 160px; resize: vertical; font-size: 1.1rem; line-height: 1.9; }
+    .phonetic { background: #f0fbfa; font-size: 1.2rem; color: #0b5f60; }
+
+    .chips { display: flex; flex-wrap: wrap; gap: 8px; }
+    .chip {
+      font-size: .82rem; padding: 5px 12px; border-radius: 999px; cursor: pointer;
+      background: #fff7ec; border: 1px solid #ffe0bf; color: #a8572c; transition: all .15s;
+    }
+    .chip:hover { background: #ffe9d2; }
+
+    .toolbar { display: flex; flex-wrap: wrap; gap: 6px; align-items: center; }
+    .ch {
+      background: #fff; border: 1px solid var(--border); color: var(--teal-dark);
+      border-radius: 9px; padding: 3px 11px; font-family: inherit; font-size: 1rem; font-weight: 800; cursor: pointer;
+    }
+    .ch:hover { border-color: var(--teal); background: #eefaf9; }
+
+    .tabs { display: flex; gap: 8px; flex-wrap: wrap; }
+    .tab {
+      flex: 1; min-width: 150px; padding: 10px 12px; border-radius: 14px; cursor: pointer;
+      background: #fff; border: 1.5px solid var(--border); font-family: inherit; font-weight: 700;
+      font-size: .88rem; color: var(--muted); text-align: center;
+    }
+    .tab small { display: block; font-weight: 600; font-size: .74rem; }
+    .tab.active { border-color: var(--teal); background: #e9f8f7; color: var(--teal-dark); }
+
+    .opts { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+    @media (max-width: 600px) { .opts { grid-template-columns: 1fr; } }
+    .lbl { display: block; font-size: .84rem; color: var(--muted); font-weight: 700; margin-bottom: 4px; }
+    input[type=range] { width: 100%; accent-color: var(--teal); }
+
+    .status { display: none; font-size: .9rem; padding: 10px 14px; border-radius: 12px; }
+    .status.info { display: block; background: #eaf5fd; color: #276b9b; border: 1px solid #cfe6f8; }
+    .status.success { display: block; background: #e6f7ef; color: var(--ok); border: 1px solid #c3ebd6; }
+    .status.error { display: block; background: #fdeceb; color: var(--err); border: 1px solid #f6cfcd; }
+
+    .player { display: none; flex-direction: column; gap: 10px; padding: 14px; border-radius: 16px; background: linear-gradient(135deg, #eafaf7, #fff6ec); border: 1px solid var(--border); }
+    .player.show { display: flex; }
+    audio { width: 100%; }
+
+    .full { margin-top: 20px; }
+    .compare-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(250px, 1fr)); gap: 12px; }
+    .compare-item { padding: 12px; border-radius: 14px; background: var(--soft); border: 1px solid var(--border); display: flex; flex-direction: column; gap: 8px; }
+    .compare-item strong { font-size: .92rem; }
+    .history-list { display: flex; flex-direction: column; gap: 10px; max-height: 360px; overflow-y: auto; }
+    .h-item { display: grid; grid-template-columns: 1fr auto; gap: 8px; align-items: center; padding: 10px 12px; border-radius: 14px; background: var(--soft); border: 1px solid var(--border); }
+    .h-item .t { font-size: .92rem; color: #0b5f60; }
+    .h-item .m { font-size: .75rem; color: var(--muted); }
+    .free-note { font-size: .82rem; color: var(--ok); background: #e9f8f1; border-radius: 10px; padding: 6px 10px; }
+
+    .modal-bg { position: fixed; inset: 0; background: rgba(36,52,58,.35); backdrop-filter: blur(4px); display: none; align-items: center; justify-content: center; padding: 16px; z-index: 50; }
+    .modal-bg.open { display: flex; }
+    .modal { background: #fff; border-radius: 22px; padding: 24px; width: 100%; max-width: 680px; max-height: 90vh; overflow-y: auto; display: flex; flex-direction: column; gap: 14px; box-shadow: 0 20px 50px rgba(0,0,0,.15); }
+  </style>
+</head>
+<body>
+<div class="container">
+  <header>
+    <div class="brand">
+      <div class="logo">🎙️</div>
+      <div>
+        <h1>استوديو الصوت السوداني</h1>
+        <p>من الفصحى أو العامية إلى نطق سوداني مُشكّل وصوت مسموع — مجاناً بالكامل</p>
+      </div>
+    </div>
+    <div class="header-actions">
+      <span class="pill" id="keyBadge">✅ وضع مجاني بالكامل</span>
+      <button class="btn btn-light btn-sm" onclick="openModal('keysModal')">⚙️ المفاتيح</button>
+      <button class="btn btn-light btn-sm" onclick="openModal('rulesModal')">📜 قواعد النطق</button>
+    </div>
+  </header>
+
+  <div class="grid">
+    <!-- Step 1 -->
+    <div class="card">
+      <div class="card-head">
+        <div class="card-title"><span class="num n1">1</span> اكتب النص (فصحى أو عامية)</div>
+        <button class="btn btn-light btn-sm" onclick="rawInput.value=''">مسح</button>
+      </div>
+      <div class="chips">
+        <span class="chip" onclick="setSample('ماذا تريد أن تفعل الآن؟ هذا الأمر جيد جداً وسيساعدنا كثيراً.')">محادثة عمل</span>
+        <span class="chip" onclick="setSample('كيف حالك اليوم؟ لماذا لم تخبرني بذلك من قبل؟')">عتاب وترحيب</span>
+        <span class="chip" onclick="setSample('أين وضعت الملفات؟ قال لي الأستاذ إن الموضوع يحتاج ثلاث دقائق فقط.')">سؤال سريع</span>
+        <span class="chip" onclick="setSample('والله يا أخي الظروف هذه الأيام صعبة، لكن إن شاء الله القادم أفضل.')">ونسة</span>
+      </div>
+      <textarea id="rawInput">ماذا تريد أن تفعل الآن؟ هذا الأمر جيد جداً وسيساعدنا كثيراً، ويجب علينا الذهاب مبكراً لكي نلحق.</textarea>
+      <button id="normBtn" class="btn btn-teal btn-wide" onclick="handleNormalize()">✨ حوّل وشكّل باللهجة السودانية</button>
+      <div id="normStatus" class="status"></div>
+    </div>
+
+    <!-- Step 2 -->
+    <div class="card">
+      <div class="card-head">
+        <div class="card-title"><span class="num n2">2</span> النص السوداني المُشكّل</div>
+        <button class="btn btn-light btn-sm" onclick="copyPhonetic()">📋 نسخ</button>
+      </div>
+      <div class="toolbar">
+        <span class="lbl" style="margin:0">إدراج:</span>
+        <button class="ch" onclick="ins('گ')">گ</button>
+        <button class="ch" onclick="ins('َ')">ـَ</button>
+        <button class="ch" onclick="ins('ِ')">ـِ</button>
+        <button class="ch" onclick="ins('ُ')">ـُ</button>
+        <button class="ch" onclick="ins('ْ')">ـْ</button>
+        <button class="ch" onclick="ins('ّ')">ـّ</button>
+        <button class="ch" onclick="ins('، ')">،</button>
+        <button class="ch" onclick="ins('... ')">...</button>
+      </div>
+      <textarea id="phonetic" class="phonetic">داير تِعمِلْ شِنو هَسِّي؟ الموضوع دَه سَمِحْ شَديدْ وحَيِساعِدنا كَتيرْ، ولازم نِمشِي بَدرِي عَشانْ نِلحَگْ.</textarea>
+
+      <div>
+        <span class="lbl">محرك الصوت:</span>
+        <div class="tabs">
+          <button id="tab-free" class="tab active" onclick="selectEngine('free')">🌿 أصوات عربية طبيعية<small>مجاني وغير محدود</small></button>
+          <button id="tab-gemini" class="tab" onclick="selectEngine('gemini')">⚡ Gemini TTS<small>مجاني بمفتاحك (حصة يومية)</small></button>
+          <button id="tab-eleven" class="tab" onclick="selectEngine('elevenlabs')">🎧 ElevenLabs<small>رصيد محدود</small></button>
+        </div>
+      </div>
+
+      <div id="opts-free" class="opts">
+        <div>
+          <label class="lbl">الصوت:</label>
+          <select id="freeVoice" onchange="onVoiceChange()">
+            <option value="ar-EG-ShakirNeural">شاكر — رجالي دافئ (الأقرب للهجة)</option>
+            <option value="ar-EG-SalmaNeural">سلمى — نسائي دافئ</option>
+            <option value="ar-YE-SalehNeural">صالح — رجالي هادئ</option>
+            <option value="ar-YE-MaryamNeural">مريم — نسائي هادئ</option>
+            <option value="ar-SA-HamedNeural">حامد — رجالي رزين</option>
+            <option value="ar-SA-ZariyahNeural">زارية — نسائي واضح</option>
+            <option value="ar-OM-AbdullahNeural">عبدالله — رجالي عميق</option>
+            <option value="ar-QA-MoazNeural">معاذ — رجالي شاب</option>
+            <option value="ar-LY-OmarNeural">عمر — رجالي</option>
+            <option value="ar-AE-HamdanNeural">حمدان — رجالي</option>
+          </select>
+        </div>
+        <div>
+          <label class="lbl">نطق حرف (گ):</label>
+          <select id="gafMode">
+            <option value="jeem">كـ G عبر (ج) — للأصوات المصرية</option>
+            <option value="qaf">قاف (ق)</option>
+            <option value="kaf">كاف (ك)</option>
+            <option value="keep">اتركه (گ)</option>
+          </select>
+        </div>
+        <div>
+          <label class="lbl">السرعة: <span id="rateVal">-8%</span></label>
+          <input type="range" id="rate" min="-30" max="20" value="-8" oninput="rateVal.textContent=this.value+'%'">
+        </div>
+        <div>
+          <label class="lbl">طبقة الصوت: <span id="pitchVal">-2Hz</span></label>
+          <input type="range" id="pitch" min="-20" max="20" value="-2" oninput="pitchVal.textContent=this.value+'Hz'">
+        </div>
+      </div>
+
+      <div id="opts-gemini" class="opts" style="display:none">
+        <div>
+          <label class="lbl">نبرة Gemini:</label>
+          <select id="geminiVoice">
+            <option value="Charon">Charon — رجالي هادئ</option>
+            <option value="Puck">Puck — رجالي حيوي</option>
+            <option value="Kore">Kore — نسائي واضح</option>
+            <option value="Aoede">Aoede — نسائي دافئ</option>
+          </select>
+        </div>
+      </div>
+
+      <div id="opts-eleven" class="opts" style="display:none">
+        <div>
+          <label class="lbl">الصوت:</label>
+          <select id="elevenVoice">
+            <option value="onwK4e9ZLuTAKqWW03F9">Daniel</option>
+            <option value="nPczCjzI2devNBz1zQrb">Brian</option>
+            <option value="EXAVITQu4vr4xnSDxMaL">Sarah</option>
+          </select>
+        </div>
+        <div>
+          <label class="lbl">الموديل:</label>
+          <select id="elevenModel">
+            <option value="eleven_flash_v2_5">Flash v2.5 (نصف الرصيد)</option>
+            <option value="eleven_multilingual_v2">Multilingual v2</option>
+          </select>
+        </div>
+      </div>
+
+      <button id="ttsBtn" class="btn btn-coral btn-wide" onclick="handleTTS()">🔊 ولّد الصوت</button>
+      <div id="ttsStatus" class="status"></div>
+      <div id="player" class="player">
+        <div style="display:flex;justify-content:space-between;align-items:center">
+          <strong style="color:var(--ok)">✅ المقطع جاهز</strong>
+          <a id="dl" class="btn btn-light btn-sm" style="text-decoration:none">⬇️ تحميل</a>
+        </div>
+        <audio id="audio" controls></audio>
+      </div>
+    </div>
+  </div>
+
+  <!-- Sudanese Channel References -->
+  <div class="card full" style="border:1.5px solid var(--teal);background:linear-gradient(135deg, #f0fdfa, #fffbeb)">
+    <div class="card-head">
+      <div class="card-title"><span class="num n1">🇸🇩</span> مكتبة العينات السودانية الأصلية (من القنوات المحددة)</div>
+      <span class="pill" style="background:#ccfbf1;color:#0f766e">محفوظة على G:/My Drive</span>
+    </div>
+    <div class="free-note">
+      تم استخراج وتنقية العينات المطلوبة بدقة من القنوات (استوديو بودكاست، كوميديا، حوار درامي يومي، ونسة شعبية، وإلقاء هادئ). استمع إليها مباشرة:
+    </div>
+    <div class="compare-grid" style="margin-top:10px">
+      <!-- 1. Podcast -->
+      <div class="compare-item" style="border:1.5px solid #0fa3a3;background:#fff">
+        <strong style="color:#0f766e">🎙️ 1. عينة البودكاست (استوديو نقي)</strong>
+        <span style="font-size:0.8rem;color:var(--muted)">مستخرجة مباشرة من: <b>بودكاست السودان (@alsudanpodcast)</b></span>
+        <audio controls src="/references/podcast_alsudanpodcast.wav" preload="metadata"></audio>
+      </div>
+
+      <!-- 2. Comedy -->
+      <div class="compare-item" style="border:1.5px solid #ff8a65;background:#fff">
+        <strong style="color:#c2410c">😂 2. عينة الكوميديا السودانية</strong>
+        <span style="font-size:0.8rem;color:var(--muted)">مستخرجة من: <b>شيلبان (@shailaban8325)</b></span>
+        <audio controls src="/references/comedy_shailaban.wav" preload="metadata"></audio>
+      </div>
+
+      <!-- 3. Daily Dialogue -->
+      <div class="compare-item" style="border:1.5px solid #3b82f6;background:#fff">
+        <strong style="color:#1d4ed8">💬 3. عينة الحوار اليومي والدراما</strong>
+        <span style="font-size:0.8rem;color:var(--muted)">مستخرجة من: <b>الدراما السودانية (@SudaneseDrama)</b></span>
+        <audio controls src="/references/daily_dialogue_drama.wav" preload="metadata"></audio>
+      </div>
+
+      <!-- 4. Wanasa & Casual -->
+      <div class="compare-item" style="border:1.5px solid #f59e0b;background:#fff">
+        <strong style="color:#b45309">☕ 4. عينة الونسة والعفوية الشعبية</strong>
+        <span style="font-size:0.8rem;color:var(--muted)">مستخرجة من: <b>أبوبكر فيصل (@AbubakrFaisal25)</b></span>
+        <audio controls src="/references/wanasa_abubakr.wav" preload="metadata"></audio>
+      </div>
+
+      <!-- 5. Calm Tech Talk -->
+      <div class="compare-item" style="border:1.5px solid #8b5cf6;background:#fff">
+        <strong style="color:#6d28d9">🎧 5. عينة الإلقاء والشرح الهادئ</strong>
+        <span style="font-size:0.8rem;color:var(--muted)">مستخرجة من: <b>بريك لوجيك (@breaklogic249)</b></span>
+        <audio controls src="/references/ref_breaklogic_calm.wav" preload="metadata"></audio>
+      </div>
+    </div>
+  </div>
+
+  <!-- Compare voices -->
+  <div class="card full">
+    <div class="card-head">
+      <div class="card-title"><span class="num n3">3</span> قارن الأصوات المجانية واختر الأقرب للسوداني</div>
+      <button id="cmpBtn" class="btn btn-teal btn-sm" onclick="compareVoices()">🎧 ولّد نفس الجملة بـ 6 أصوات</button>
+    </div>
+    <div class="free-note">💡 هذا القسم مجاني بالكامل — جرّب بلا حدود، ثم اختر الصوت الذي يبدو أكثر سودانية واعتمده من القائمة أعلاه.</div>
+    <div id="compareGrid" class="compare-grid"></div>
+  </div>
+
+  <!-- clipHistory -->
+  <div class="card full">
+    <div class="card-head">
+      <div class="card-title">🗂️ سجل المقاطع</div>
+      <button class="btn btn-light btn-sm" onclick="clipHistory.length=0;saveHistory();renderHistory()">مسح السجل</button>
+    </div>
+    <div id="historyList" class="history-list"></div>
+  </div>
+</div>
+
+<!-- Keys modal -->
+<div id="keysModal" class="modal-bg">
+  <div class="modal">
+    <div class="card-head"><h3>⚙️ مفاتيح الربط (اختيارية)</h3><button class="btn btn-light btn-sm" onclick="closeModal('keysModal')">✕</button></div>
+    <p style="color:var(--muted);font-size:.9rem">المحرك المجاني لا يحتاج أي مفتاح. مفتاح Gemini يُستخدم فقط لتحويل النص إلى السوداني.</p>
+    <div><label class="lbl">مفتاح Gemini:</label><input type="password" id="geminiKeyInput" placeholder="اتركه فارغاً للإبقاء على المحفوظ"><small id="geminiHint" style="color:var(--ok)"></small></div>
+    <div><label class="lbl">مفتاح ElevenLabs:</label><input type="password" id="elevenKeyInput" placeholder="اختياري"><small id="elevenHint" style="color:var(--muted)"></small></div>
+    <button class="btn btn-teal" onclick="saveKeys()">💾 حفظ</button>
+  </div>
+</div>
+
+<!-- Rules modal -->
+<div id="rulesModal" class="modal-bg">
+  <div class="modal">
+    <div class="card-head"><h3>📜 قواعد النطق السوداني</h3><button class="btn btn-light btn-sm" onclick="closeModal('rulesModal')">✕</button></div>
+    <textarea id="rulesEditor" style="min-height:340px;font-size:.92rem"></textarea>
+    <button class="btn btn-teal" onclick="saveRules()">💾 حفظ في sudanese_rules.txt</button>
+  </div>
+</div>
+
+<script>
+  let engine = 'free';
+  const clipHistory = JSON.parse(localStorage.getItem('sd_history') || '[]');
+  const $ = id => document.getElementById(id);
+
+  function saveHistory() { localStorage.setItem('sd_history', JSON.stringify(clipHistory.slice(0, 30))); }
+  function renderHistory() {
+    const list = $('historyList');
+    if (!clipHistory.length) { list.innerHTML = '<span style="color:var(--muted);font-size:.9rem">لا توجد مقاطع بعد.</span>'; return; }
+    list.innerHTML = clipHistory.map(h => `
+      <div class="h-item">
+        <div><div class="t">${h.text.slice(0, 110)}</div><div class="m">${h.voice} • ${h.time}</div></div>
+        <audio controls preload="none" src="/output/${h.file}" style="width:220px"></audio>
+      </div>`).join('');
+  }
+
+  function setSample(t) { $('rawInput').value = t; }
+  function ins(ch) {
+    const b = $('phonetic'); const s = b.selectionStart ?? b.value.length; const e = b.selectionEnd ?? s;
+    b.value = b.value.slice(0, s) + ch + b.value.slice(e); b.focus(); b.selectionStart = b.selectionEnd = s + ch.length;
+  }
+  function copyPhonetic() { navigator.clipboard.writeText($('phonetic').value); status('normStatus', 'success', '✅ تم النسخ'); }
+  function status(id, type, msg) { const el = $(id); el.className = 'status ' + type; el.textContent = msg; }
+  function openModal(id) { $(id).classList.add('open'); }
+  function closeModal(id) { $(id).classList.remove('open'); }
+
+  function onVoiceChange() {
+    $('gafMode').value = $('freeVoice').value.startsWith('ar-EG') ? 'jeem' : 'qaf';
+  }
+
+  function selectEngine(e) {
+    engine = e;
+    ['free', 'gemini', 'eleven'].forEach(k => {
+      const key = k === 'eleven' ? 'elevenlabs' : k;
+      $('tab-' + k).classList.toggle('active', key === e);
+      $('opts-' + k).style.display = key === e ? 'grid' : 'none';
+    });
+  }
+
+  async function loadStatus() {
+    const d = await (await fetch('/api/status')).json();
+    $('rulesEditor').value = d.rules || '';
+    if (d.hasGeminiKey) $('geminiHint').textContent = 'محفوظ: ' + d.geminiKeyPreview;
+    $('elevenHint').textContent = d.hasElevenLabsKey ? 'محفوظ: ' + d.elevenLabsKeyPreview : 'غير مضاف';
+    $('keyBadge').textContent = d.hasGeminiKey ? '✅ مجاني بالكامل • Gemini متصل' : '✅ وضع مجاني بالكامل';
+  }
+
+  async function handleNormalize() {
+    const text = $('rawInput').value.trim();
+    if (!text) return status('normStatus', 'error', 'اكتب نصاً أولاً.');
+    $('normBtn').disabled = true; status('normStatus', 'info', '⏳ جاري التحويل والتشكيل...');
+    try {
+      const d = await (await fetch('/api/normalize', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ text }) })).json();
+      if (!d.ok) throw new Error(d.error);
+      $('phonetic').value = d.phoneticText;
+      d.warning ? status('normStatus', 'info', 'تم بالمحوّل المحلي (Gemini مشغول حالياً، حاول مرة أخرى بعد قليل)')
+                : status('normStatus', 'success', '✅ تم التحويل عبر ' + d.source);
+    } catch (e) { status('normStatus', 'error', '❌ ' + e.message); }
+    finally { $('normBtn').disabled = false; }
+  }
+
+  function buildBody(text, overrides = {}) {
+    return {
+      phoneticText: text, engine,
+      voice: $('freeVoice').value, gafMode: $('gafMode').value,
+      rate: Number($('rate').value), pitch: Number($('pitch').value),
+      geminiVoice: $('geminiVoice').value,
+      voiceId: $('elevenVoice').value, modelId: $('elevenModel').value,
+      ...overrides
+    };
+  }
+
+  async function requestTTS(body) {
+    const d = await (await fetch('/api/tts', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body) })).json();
+    if (!d.ok) throw new Error(d.error);
+    return d;
+  }
+
+  async function handleTTS() {
+    const text = $('phonetic').value.trim();
+    if (!text) return status('ttsStatus', 'error', 'النص المشكّل فارغ.');
+    $('ttsBtn').disabled = true; status('ttsStatus', 'info', '⏳ جاري توليد الصوت...');
+    try {
+      const d = await requestTTS(buildBody(text));
+      const url = `data:${d.mimeType};base64,${d.audioBase64}`;
+      $('audio').src = url; $('audio').play();
+      $('dl').href = url; $('dl').download = d.fileName;
+      $('player').classList.add('show');
+      status('ttsStatus', 'success', '✅ تم التوليد وحُفظ في مجلد output');
+      const voiceLabel = engine === 'free' ? $('freeVoice').selectedOptions[0].text.split('—')[0].trim() : engine;
+      clipHistory.unshift({ text, file: d.fileName, voice: voiceLabel, time: new Date().toLocaleTimeString('ar') });
+      saveHistory(); renderHistory();
+    } catch (e) { status('ttsStatus', 'error', '❌ ' + e.message); }
+    finally { $('ttsBtn').disabled = false; }
+  }
+
+  async function compareVoices() {
+    const text = $('phonetic').value.trim();
+    if (!text) return;
+    const voices = [
+      ['ar-EG-ShakirNeural', 'شاكر', 'jeem'], ['ar-EG-SalmaNeural', 'سلمى', 'jeem'],
+      ['ar-YE-SalehNeural', 'صالح', 'qaf'], ['ar-SA-HamedNeural', 'حامد', 'qaf'],
+      ['ar-OM-AbdullahNeural', 'عبدالله', 'qaf'], ['ar-QA-MoazNeural', 'معاذ', 'qaf']
+    ];
+    $('cmpBtn').disabled = true;
+    $('compareGrid').innerHTML = voices.map(v => `<div class="compare-item" id="cmp-${v[0]}"><strong>${v[1]}</strong><span style="color:var(--muted);font-size:.85rem">⏳ جاري التوليد...</span></div>`).join('');
+    await Promise.all(voices.map(async ([id, name, gaf]) => {
+      const box = $('cmp-' + id);
+      try {
+        const d = await requestTTS(buildBody(text, { engine: 'free', voice: id, gafMode: gaf }));
+        box.innerHTML = `<strong>${name}</strong><audio controls src="data:${d.mimeType};base64,${d.audioBase64}"></audio>
+          <button class="btn btn-light btn-sm" onclick="freeVoice.value='${id}';gafMode.value='${gaf}';selectEngine('free')">✔️ اعتمد هذا الصوت</button>`;
+      } catch (e) { box.innerHTML = `<strong>${name}</strong><span style="color:var(--err);font-size:.85rem">${e.message}</span>`; }
+    }));
+    $('cmpBtn').disabled = false;
+  }
+
+  async function saveKeys() {
+    await fetch('/api/save-keys', { method: 'POST', headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ geminiKey: $('geminiKeyInput').value.trim(), elevenLabsKey: $('elevenKeyInput').value.trim() }) });
+    closeModal('keysModal'); loadStatus();
+  }
+  async function saveRules() {
+    await fetch('/api/save-rules', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ rules: $('rulesEditor').value }) });
+    closeModal('rulesModal');
+  }
+
+  loadStatus(); renderHistory();
+</script>
+</body>
+</html>
