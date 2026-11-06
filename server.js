@@ -514,6 +514,26 @@ const server = http.createServer(async (req, res) => {
     }
   }
 
+  if (req.method === 'GET' && urlObj.pathname === '/api/colab-audio') {
+    const driveWav = path.join('G:\\My Drive\\Sudanese_Voice_Project', 'cloned_sudanese.wav');
+    const localWav = path.join(OUTPUT_DIR, 'cloned_sudanese.wav');
+    let target = null;
+    if (fs.existsSync(driveWav)) target = driveWav;
+    else if (fs.existsSync(localWav)) target = localWav;
+
+    if (target) {
+      const stat = fs.statSync(target);
+      res.writeHead(200, {
+        'Content-Type': 'audio/wav',
+        'Content-Length': stat.size,
+        'Cache-Control': 'no-cache'
+      });
+      return fs.createReadStream(target).pipe(res);
+    } else {
+      return sendJson(res, 404, { ok: false, error: 'لم يتم العثور على مقطع مستنسخ بعد. شغّل خلية الاستنساخ في Colab أولاً.' });
+    }
+  }
+
   if (req.method === 'GET' && urlObj.pathname === '/api/knowledge-base') {
     const kb = getKnowledgeBase();
     if (!kb) {
