@@ -10,6 +10,17 @@ const PORT = process.env.PORT || 3000;
 const ENV_PATH = path.join(__dirname, '.env');
 const RULES_PATH = path.join(__dirname, 'sudanese_rules.txt');
 const OUTPUT_DIR = path.join(__dirname, 'output');
+const KB_PATH = path.join(__dirname, 'sudanese_master_knowledge_base.json');
+const BOOKS_CORPUS_DIR = path.join(__dirname, 'corpus_books');
+
+function getKnowledgeBase() {
+  if (fs.existsSync(KB_PATH)) {
+    try {
+      return JSON.parse(fs.readFileSync(KB_PATH, 'utf8'));
+    } catch(e) {}
+  }
+  return null;
+}
 
 if (!fs.existsSync(OUTPUT_DIR)) {
   fs.mkdirSync(OUTPUT_DIR, { recursive: true });
@@ -164,6 +175,14 @@ function localSudaneseNormalizer(text) {
 
   for (const [pattern, replacement] of phraseReplacements) {
     out = out.replace(pattern, replacement);
+  }
+
+  const kb = getKnowledgeBase();
+  if (kb && kb.phonetic_rules && kb.phonetic_rules.qaf_to_gaf_mapping) {
+    for (const [orig, gafWord] of Object.entries(kb.phonetic_rules.qaf_to_gaf_mapping)) {
+      const rx = new RegExp(`(^|[\\s،.؟!])${orig}(?=[\\s،.?!]|$)`, 'g');
+      out = out.replace(rx, `$1${gafWord}`);
+    }
   }
   return out;
 }
@@ -492,6 +511,88 @@ const server = http.createServer(async (req, res) => {
       return sendJson(res, 200, { ok: true, message: 'تم تحديث ملف sudanese_rules.txt بنجاح' });
     } catch (err) {
       return sendJson(res, 400, { ok: false, error: err.message });
+    }
+  }
+
+  if (req.method === 'GET' && urlObj.pathname === '/api/knowledge-base') {
+    const kb = getKnowledgeBase();
+    if (!kb) {
+      return sendJson(res, 404, { ok: false, error: 'لم يتم العثور على قاعدة المعرفة المعجمية' });
+    }
+    return sendJson(res, 200, { ok: true, data: kb });
+  }
+
+  if (req.method === 'GET' && urlObj.pathname === '/api/sudanese-search') {
+    const query = (urlObj.searchParams.get('q') || '').trim();
+    if (!query) {
+      return sendJson(res, 400, { ok: false, error: 'كلمة البحث فارغة' });
+    }
+    const kb = getKnowledgeBase();
+    const results = {
+      lexiconMatches: [],
+      proverbMatches: [],
+      literatureQuotes: []
+    };
+    if (kb) {
+      results.lexiconMatches = (kb.lexicon || []).filter(item =>
+        item.word.includes(query) || item.meaning.includes(query) || (item.example && item.example.includes(query))
+      );
+      results.proverbMatches = (kb.proverbs || []).filter(item =>
+        item.proverb.includes(query) || item.meaning.includes(query)
+      );
+    }
+    if (fs.existsSync(BOOKS_CORPUS_DIR)) {
+      const txtFiles = fs.readdirSync(BOOKS_CORPUS_DIR).filter(f => f.endsWith('.txt'));
+      for (const f of txtFiles) {
+        if (results.literatureQuotes.length >= 15) break;
+        try {
+          const content = fs.readFileSync(path.join(BOOKS_CORPUS_DIR, f), 'utf8');
+          const lines = content.split('\n');
+          for (let i = 0; i < lines.length; i++) {
+            const line = lines[i].trim();
+            if (line.includes(query)) {
+              results.literatureQuotes.push({
+                book: f.replace('.txt', '').replace(/_/g, ' '),
+                lineNum: i + 1,
+                quote: line
+              });
+              if (results.literatureQuotes.length >= 15) break;
+            }
+          }
+        } catch (_) {}
+      }
+    }
+    return sendJson(res, 200, { ok: true, query, results });
+  }
+
+  if (req.method === 'POST' && urlObj.pathname === '/api/phonetic-calibrate') {
+    try {
+      const body = await parseBody(req);
+      const text = (body.text || '').trim();
+      if (!text) {
+        return sendJson(res, 400, { ok: false, error: 'يرجى إدخال نص لمعايرته' });
+      }
+      const kb = getKnowledgeBase();
+      let calibrated = text;
+      const changes = [];
+      if (kb && kb.phonetic_rules && kb.phonetic_rules.qaf_to_gaf_mapping) {
+        const mapping = kb.phonetic_rules.qaf_to_gaf_mapping;
+        for (const [orig, gafWord] of Object.entries(mapping)) {
+          const regex = new RegExp(`(^|[\\s،.؟!])${orig}(?=[\\s،.?!]|$)`, 'g');
+          if (regex.test(calibrated)) {
+            calibrated = calibrated.replace(regex, `$1${gafWord}`);
+            changes.push(`استبدال [${orig}] بـ [${gafWord}]`);
+          }
+        }
+      }
+      return sendJson(res, 200, {
+        ok: true,
+        original: text,
+        calibrated,
+        changes
+      });
+    } catch (err) {
+      return sendJson(res, 500, { ok: false, error: err.message });
     }
   }
 

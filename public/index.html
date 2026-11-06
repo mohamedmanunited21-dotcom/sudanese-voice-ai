@@ -351,6 +351,84 @@
     </div>
   </div>
 
+  
+  <!-- Sudanese Knowledge Base & Books Memory -->
+  <div class="card full" style="border:2px solid #8b5cf6;background:linear-gradient(135deg, #f5f3ff, #faf5ff)">
+    <div class="card-head">
+      <div class="card-title" style="color:#5b21b6">
+        <span class="num" style="background:#7c3aed">📚</span>
+        العقل اللغوي والمعجمي السوداني (مستخلص من 81 كتاباً ومصدر تراثي)
+      </div>
+      <span class="pill" style="background:#ede9fe;color:#6d28d9;border-color:#ddd6fe">
+        ⚡ 304,297 كلمة معجمية • 56,168 سطراً حوارياً
+      </span>
+    </div>
+    <div class="free-note" style="background:#f3e8ff;color:#6b21a8;border:1px solid #e9d5ff">
+      تم فحص وقراءة أمهات المعاجم والروايات السودانية (قاموس اللهجة العامية لعون الشريف قاسم، الأحاجي لعبد الله الطيب، كتاب الطبقات لود ضيف الله، المسيد، روايات بركة ساكن والطيب صالح وحمور زيادة) وربطها مباشرة بالمحرك الصوتي لمعايرة النطق والأصالة الثقافية.
+    </div>
+
+    <!-- Quick Stats Grid -->
+    <div style="display:grid;grid-template-columns:repeat(auto-fit, minmax(180px, 1fr));gap:12px;margin-top:6px">
+      <div style="background:#fff;border:1px solid #ddd6fe;border-radius:14px;padding:12px;text-align:center">
+        <div style="font-size:1.4rem;font-weight:800;color:#7c3aed">81</div>
+        <div style="font-size:0.8rem;color:var(--muted)">كتاباً في مجلد كتب سودانية</div>
+      </div>
+      <div style="background:#fff;border:1px solid #ddd6fe;border-radius:14px;padding:12px;text-align:center">
+        <div style="font-size:1.4rem;font-weight:800;color:#0d9488">17 كتاباً</div>
+        <div style="font-size:0.8rem;color:var(--muted)">مستخرجاً رقمياً بالكامل</div>
+      </div>
+      <div style="background:#fff;border:1px solid #ddd6fe;border-radius:14px;padding:12px;text-align:center">
+        <div style="font-size:1.4rem;font-weight:800;color:#ea580c">56,168</div>
+        <div style="font-size:0.8rem;color:var(--muted)">سطراً حوارياً وسردياً</div>
+      </div>
+      <div style="background:#fff;border:1px solid #ddd6fe;border-radius:14px;padding:12px;text-align:center">
+        <div style="font-size:1.4rem;font-weight:800;color:#2563eb">304,297</div>
+        <div style="font-size:0.8rem;color:var(--muted)">كلمة معجمية وأدبية</div>
+      </div>
+    </div>
+
+    <!-- Live Search in Sudanese Books & Lexicon -->
+    <div style="background:#fff;border:1px solid #e9d5ff;border-radius:16px;padding:16px;margin-top:10px">
+      <label class="lbl" style="font-size:0.95rem;color:#5b21b6;margin-bottom:8px">
+        🔍 ابحث عن أي كلمة أو مثل أو تعبير في المعاجم والروايات السودانية:
+      </label>
+      <div style="display:flex;gap:10px;flex-wrap:wrap">
+        <input type="text" id="kbSearchInput" placeholder="اكتب كلمة سودانية مثلاً: زول، عاد، أها، دحين، قاعد، سجمي، بري، جبنة، قاشر..." style="flex:1;min-width:260px" onkeydown="if(event.key==='Enter') doKBSearch()">
+        <button class="btn btn-teal" onclick="doKBSearch()" style="background:linear-gradient(135deg, #7c3aed, #9333ea)">ابحث فوراً</button>
+        <button class="btn btn-light" onclick="calibrateInputWithLexicon()" title="يطبق قواعد القاموس على النص في الخطوة 1">⚡ معايرة النص بأصول المعجم</button>
+      </div>
+
+      <!-- Quick Word Chips -->
+      <div class="chips" style="margin-top:10px">
+        <span class="chip" onclick="quickKBSearch('زول')">زول</span>
+        <span class="chip" onclick="quickKBSearch('عاد')">عاد</span>
+        <span class="chip" onclick="quickKBSearch('أها')">أها</span>
+        <span class="chip" onclick="quickKBSearch('دحين')">دحين</span>
+        <span class="chip" onclick="quickKBSearch('هسع')">هسع / حسي</span>
+        <span class="chip" onclick="quickKBSearch('بري')">بري</span>
+        <span class="chip" onclick="quickKBSearch('سجمي')">سجمي</span>
+        <span class="chip" onclick="quickKBSearch('كدي')">كدي</span>
+        <span class="chip" onclick="quickKBSearch('سمح')">سمح بالحيل</span>
+        <span class="chip" onclick="quickKBSearch('جبنة')">جبنة</span>
+        <span class="chip" onclick="quickKBSearch('قاشر')">قاشر</span>
+        <span class="chip" onclick="quickKBSearch('فتران')">فتران</span>
+      </div>
+
+      <!-- Search Results Area -->
+      <div id="kbResults" style="margin-top:14px;display:none"></div>
+    </div>
+
+    <!-- Sudanese Proverbs Grid -->
+    <div style="margin-top:10px">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px">
+        <strong style="color:#5b21b6;font-size:0.95rem">✨ أمثال وحكم سودانية أصيلة من أمهات التراث:</strong>
+        <span style="font-size:0.8rem;color:var(--muted)">مستخرجة لضبط البلاغة والذكاء الثقافي</span>
+      </div>
+      <div id="proverbsGrid" style="display:grid;grid-template-columns:repeat(auto-fit, minmax(280px, 1fr));gap:10px"></div>
+    </div>
+  </div>
+
+
   <!-- Compare voices -->
   <div class="card full">
     <div class="card-head">
@@ -519,6 +597,121 @@
   }
 
   loadStatus(); renderHistory();
+
+  // --- Sudanese Knowledge Base & Lexicon Functions ---
+  async function loadKnowledgeBaseUI() {
+    try {
+      const res = await fetch('/api/knowledge-base');
+      const d = await res.json();
+      if (!d.ok || !d.data) return;
+      const kb = d.data;
+      if (kb.proverbs && $('proverbsGrid')) {
+        $('proverbsGrid').innerHTML = kb.proverbs.slice(0, 6).map(p => `
+          <div style="background:#fff;border:1px solid #ddd6fe;border-radius:12px;padding:12px;display:flex;flex-direction:column;gap:4px">
+            <strong style="color:#6d28d9;font-size:0.92rem">«${p.proverb}»</strong>
+            <span style="font-size:0.82rem;color:var(--text)">${p.meaning}</span>
+            <span style="font-size:0.75rem;color:var(--muted)">💡 ${p.occasion}</span>
+          </div>
+        `).join('');
+      }
+    } catch(e) {
+      console.error('Failed to load KB UI:', e);
+    }
+  }
+
+  function quickKBSearch(word) {
+    if ($('kbSearchInput')) {
+      $('kbSearchInput').value = word;
+      doKBSearch();
+    }
+  }
+
+  async function doKBSearch() {
+    const q = ($('kbSearchInput').value || '').trim();
+    if (!q) return;
+    const resBox = $('kbResults');
+    resBox.style.display = 'block';
+    resBox.innerHTML = '<div style="padding:12px;color:#6d28d9;font-weight:700">⏳ جاري البحث في 304,000 كلمة من المعاجم والروايات...</div>';
+    
+    try {
+      const res = await fetch('/api/sudanese-search?q=' + encodeURIComponent(q));
+      const data = await res.json();
+      if (!data.ok) throw new Error(data.error);
+
+      const r = data.results;
+      let out = '';
+
+      if (r.lexiconMatches && r.lexiconMatches.length) {
+        out += '<div style="margin-bottom:12px"><strong style="color:#0f766e;font-size:0.95rem">📖 من القاموس والمعجم الفونولوجي:</strong><div style="display:flex;flex-direction:column;gap:8px;margin-top:6px">';
+        out += r.lexiconMatches.map(m => `
+          <div style="background:#f0fdfa;border:1px solid #99f6e4;border-radius:10px;padding:10px">
+            <div style="display:flex;justify-content:space-between;align-items:center">
+              <strong style="color:#0f766e;font-size:1.1rem">«${m.word}»</strong>
+              <span style="font-size:0.78rem;background:#ccfbf1;color:#0f766e;padding:2px 8px;border-radius:6px">${m.category}</span>
+            </div>
+            <div style="font-size:0.88rem;color:var(--text);margin-top:4px"><b>المعنى:</b> ${m.meaning}</div>
+            <div style="font-size:0.84rem;color:#0369a1;margin-top:2px"><b>النطق الفونولوجي:</b> ${m.phonetic}</div>
+            <div style="font-size:0.84rem;color:#b45309;margin-top:2px"><b>شاهد الاستخدام:</b> ${m.example}</div>
+            <div style="font-size:0.75rem;color:var(--muted);margin-top:2px">المصدر: ${m.source}</div>
+          </div>
+        `).join('');
+        out += '</div></div>';
+      }
+
+      if (r.proverbMatches && r.proverbMatches.length) {
+        out += '<div style="margin-bottom:12px"><strong style="color:#c2410c;font-size:0.95rem">✨ من الأمثال الشعبية:</strong><div style="display:flex;flex-direction:column;gap:8px;margin-top:6px">';
+        out += r.proverbMatches.map(p => `
+          <div style="background:#fff7ed;border:1px solid #fed7aa;border-radius:10px;padding:10px">
+            <strong style="color:#c2410c">«${p.proverb}»</strong>
+            <div style="font-size:0.86rem;color:var(--text);margin-top:4px">${p.meaning}</div>
+            <div style="font-size:0.78rem;color:var(--muted)">💡 ${p.occasion}</div>
+          </div>
+        `).join('');
+        out += '</div></div>';
+      }
+
+      if (r.literatureQuotes && r.literatureQuotes.length) {
+        out += '<div><strong style="color:#4338ca;font-size:0.95rem">📚 شواهد حية من الروايات السودانية المستخرجة:</strong><div style="display:flex;flex-direction:column;gap:6px;margin-top:6px;max-height:260px;overflow-y:auto">';
+        out += r.literatureQuotes.map(qItem => `
+          <div style="background:#faf5ff;border:1px solid #e9d5ff;border-radius:8px;padding:8px 10px;font-size:0.85rem">
+            <span style="color:#6b21a8;font-weight:700">[${qItem.book} - سطر ${qItem.lineNum}]:</span>
+            <span style="color:var(--text)">${qItem.quote}</span>
+          </div>
+        `).join('');
+        out += '</div></div>';
+      }
+
+      if (!r.lexiconMatches.length && !r.proverbMatches.length && !r.literatureQuotes.length) {
+        out = '<div style="padding:10px;color:var(--muted)">لم يتم العثور على شواهد مباشرة لهذه الكلمة في المعاجم أو الروايات الحالية. جرب مفردة أخرى (مثل: زول، عاد، جبنة، كدي).</div>';
+      }
+
+      resBox.innerHTML = out;
+    } catch(err) {
+      resBox.innerHTML = '<div style="padding:10px;color:var(--err)">حدث خطأ أثناء البحث: ' + err.message + '</div>';
+    }
+  }
+
+  async function calibrateInputWithLexicon() {
+    const raw = ($('rawInput').value || '').trim();
+    if (!raw) return alert('الرجاء كتابة نص في الصندوق (الخطوة 1) أولاً');
+    try {
+      const res = await fetch('/api/phonetic-calibrate', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ text: raw })
+      });
+      const data = await res.json();
+      if (data.ok && data.calibrated) {
+        $('phonetic').value = data.calibrated;
+        status('normStatus', 'success', '⚡ تمت المعايرة الفونولوجية وفق أمهات المعاجم السودانية (' + data.changes.length + ' تغيير)');
+      }
+    } catch(e) {
+      alert('خطأ في المعايرة: ' + e.message);
+    }
+  }
+
+  loadKnowledgeBaseUI();
+
 </script>
 </body>
 </html>
