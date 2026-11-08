@@ -552,6 +552,26 @@
     return d;
   }
 
+  async function fetchColabAudio() {
+    status('ttsStatus', 'info', '⏳ جاري جلب وتشغيل المقطع المستنسخ من Google Drive...');
+    try {
+      const res = await fetch('/api/colab-audio?t=' + Date.now());
+      if (!res.ok) {
+        throw new Error('لم يتم العثور على ملف الصوت cloned_sudanese.wav في Google Drive.');
+      }
+      const blob = await res.blob();
+      const url = URL.createObjectURL(blob);
+      $('audio').src = url;
+      $('audio').play();
+      $('dl').href = url;
+      $('dl').download = 'cloned_sudanese.wav';
+      $('player').classList.add('show');
+      status('ttsStatus', 'success', '🎧 تم جلب الصوت المستنسخ وتشغيله بنجاح! استمع إليه الآن.');
+    } catch (err) {
+      status('ttsStatus', 'error', '⚠️ ' + err.message);
+    }
+  }
+
   async function handleTTS() {
     const text = $('phonetic').value.trim();
     if (!text) return status('ttsStatus', 'error', 'النص المشكّل فارغ.');
