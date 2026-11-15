@@ -11,3 +11,7 @@ output/
 # Keep references small or ignore large inputs
 inputs/
 voice_samples/
+
+# أدوات التنظيف: مخرجات العمل المحلية
+data_cleaning/work/
+__pycache__/

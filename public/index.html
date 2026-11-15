@@ -529,7 +529,7 @@
       const d = await (await fetch('/api/normalize', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ text, genre: document.getElementById("sudaneseGenre") ? document.getElementById("sudaneseGenre").value : "chat_intimacy" }) })).json();
       if (!d.ok) throw new Error(d.error);
       $('phonetic').value = d.phoneticText;
-      d.warning ? status('normStatus', 'info', 'تم بالمحوّل المحلي (Gemini مشغول حالياً، حاول مرة أخرى بعد قليل)')
+      d.warning ? status('normStatus', 'error', '⚠️ تم بالمحوّل المحلي المبسّط (جودته أقل بكثير من Gemini) لأن Gemini فشل: ' + d.warning)
                 : status('normStatus', 'success', '✅ تم التحويل عبر ' + d.source);
     } catch (e) { status('normStatus', 'error', '❌ ' + e.message); }
     finally { $('normBtn').disabled = false; }

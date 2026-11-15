@@ -27,3 +27,18 @@ pip install edge-tts yt-dlp
 node server.js
 ```
 ثم افتح المتصفح على: `http://localhost:3000`
+
+## ⚙️ إعدادات اختيارية (في ملف `.env` أو متغيرات البيئة)
+
+| المتغير | الوظيفة |
+| --- | --- |
+| `HOST` | افتراضيًا `127.0.0.1` (محلي فقط). لا تغيّره إلا إن أردت فتح التطبيق على الشبكة. |
+| `PORT` | المنفذ (افتراضي 3000). |
+| `SUDANESE_DATA_DIR` | مجلد المشروع على Drive الذي فيه `sudanese_master_knowledge_base.json` و`corpus_books` (افتراضي `G:\My Drive\Sudanese_Voice_Project`). |
+| `GEMINI_TEXT_MODELS` / `GEMINI_TTS_MODELS` | قائمة نماذج Gemini مفصولة بفواصل لتجربتها بالترتيب. |
+
+## 🧪 اختبار المحوّل المحلي
+
+```
+node test_normalizer.js
+```

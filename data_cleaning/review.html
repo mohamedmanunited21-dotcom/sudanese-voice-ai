@@ -1,0 +1,193 @@
+<!doctype html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>مراجعة بيانات التدريب</title>
+<style>
+  :root { --bg:#f6f7f9; --card:#fff; --ink:#1b1f24; --mut:#6b7480; --line:#dfe3e8; --ok:#1a7f4b; --bad:#b3261e; --acc:#1f5fbf; }
+  @media (prefers-color-scheme: dark) { :root { --bg:#14171b; --card:#1d2228; --ink:#e8ebef; --mut:#98a2ae; --line:#323a43; --ok:#4cc58a; --bad:#ff7b72; --acc:#6aa5ff; } }
+  * { box-sizing: border-box; }
+  body { margin:0; background:var(--bg); color:var(--ink); font:16px/1.6 system-ui, "Segoe UI", Tahoma, sans-serif; }
+  header { padding:10px 16px; background:var(--card); border-bottom:1px solid var(--line); display:flex; gap:16px; align-items:center; flex-wrap:wrap; }
+  header h1 { font-size:17px; margin:0; }
+  .pill { padding:2px 10px; border-radius:99px; border:1px solid var(--line); font-size:14px; }
+  .pill.ok { color:var(--ok); } .pill.bad { color:var(--bad); }
+  main { display:grid; grid-template-columns: 340px 1fr; gap:16px; padding:16px; max-width:1200px; margin:0 auto; }
+  @media (max-width: 860px) { main { grid-template-columns: 1fr; } }
+  .card { background:var(--card); border:1px solid var(--line); border-radius:10px; }
+  #list { max-height: calc(100vh - 150px); overflow:auto; }
+  .filters { display:flex; gap:8px; padding:10px; border-bottom:1px solid var(--line); }
+  select, button, textarea { font:inherit; color:inherit; }
+  select { padding:4px 8px; background:var(--card); border:1px solid var(--line); border-radius:6px; flex:1; }
+  .row { padding:8px 12px; border-bottom:1px solid var(--line); cursor:pointer; display:flex; gap:8px; align-items:baseline; }
+  .row:hover { background:rgba(127,127,127,.08); } .row.cur { background:rgba(31,95,191,.14); }
+  .row .t { flex:1; overflow:hidden; white-space:nowrap; text-overflow:ellipsis; font-size:14px; }
+  .row .sp { color:var(--mut); font-size:12px; min-width:70px; }
+  .st-keep { color:var(--ok); } .st-drop { color:var(--bad); }
+  #work { padding:16px; display:flex; flex-direction:column; gap:12px; }
+  .meta { color:var(--mut); font-size:13px; display:flex; gap:14px; flex-wrap:wrap; }
+  audio { width:100%; }
+  .orig { background:rgba(127,127,127,.1); padding:8px 12px; border-radius:8px; font-size:15px; }
+  .orig small { color:var(--mut); display:block; }
+  textarea { width:100%; min-height:110px; padding:12px; font-size:22px; line-height:1.9; border:1px solid var(--line); border-radius:8px; background:var(--bg); }
+  .flags { font-size:14px; color:var(--mut); } .flags b { color:#b26a00; }
+  .actions { display:flex; gap:10px; flex-wrap:wrap; }
+  button { padding:9px 18px; border-radius:8px; border:1px solid var(--line); background:var(--card); cursor:pointer; }
+  button.keep { background:var(--ok); color:#fff; border-color:var(--ok); }
+  button.drop { background:var(--bad); color:#fff; border-color:var(--bad); }
+  kbd { background:rgba(127,127,127,.2); padding:0 5px; border-radius:4px; font-size:12px; }
+  .help { color:var(--mut); font-size:13px; }
+</style>
+</head>
+<body>
+<header>
+  <h1>مراجعة بيانات التدريب</h1>
+  <span class="pill" id="cTotal"></span>
+  <span class="pill ok" id="cKeep"></span>
+  <span class="pill bad" id="cDrop"></span>
+  <span class="pill" id="cLeft"></span>
+</header>
+<main>
+  <section class="card" id="list">
+    <div class="filters">
+      <select id="fSpeaker"></select>
+      <select id="fStatus">
+        <option value="pending">لم تُراجَع</option>
+        <option value="all">الكل</option>
+        <option value="keep">المعتمدة</option>
+        <option value="drop">المحذوفة</option>
+      </select>
+    </div>
+    <div id="rows"></div>
+  </section>
+
+  <section class="card" id="work">
+    <div id="empty">لا مقاطع في هذا التصفية.</div>
+    <div id="panel" hidden>
+      <div class="meta" id="meta"></div>
+      <audio id="player" controls></audio>
+      <div class="orig"><small>ما كتبه Whisper (للمقارنة):</small><span id="orig"></span></div>
+      <div>
+        <div class="help">اكتب ما يُقال في المقطع <b>بالضبط</b> كما تنطقه، بإملاء ثابت (دا، دي، شنو، هسي، دحين…). الحرف [g] اكتبه «ق» كما هو (مفردات النموذج لا تعرف «گ»).</div>
+        <textarea id="text" spellcheck="false"></textarea>
+        <div class="flags" id="flags"></div>
+      </div>
+      <div class="actions">
+        <button class="keep" id="bKeep">✓ اعتمد وانتقل <kbd>Alt+K</kbd></button>
+        <button class="drop" id="bDrop">✗ احذف المقطع <kbd>Alt+D</kbd></button>
+        <button id="bReplay">↺ أعد التشغيل <kbd>Alt+R</kbd></button>
+        <button id="bReset">استعد نص Whisper</button>
+        <button id="bPrev">→ السابق <kbd>Alt+→</kbd></button>
+        <button id="bNext">← التالي <kbd>Alt+←</kbd></button>
+        <select id="speed"><option value="1">سرعة 1×</option><option value="0.8">0.8×</option><option value="0.65">0.65×</option></select>
+      </div>
+      <div class="help">احذف المقطع إن كان فيه أكثر من متحدث، أو موسيقى/ضجيج، أو كلام مقطوع، أو لا تستطيع كتابة نصه بثقة. الأقل والأنقى أفضل.</div>
+    </div>
+  </section>
+</main>
+
+<script>
+const $ = (id) => document.getElementById(id);
+const SUSPECT = ['هذا','هذه','ماذا','لماذا','أين','الآن','الان','جدا','جداً','كثيرا','كثيراً','أريد','اريد','نريد','هكذا','هؤلاء','ثلاثة','ثاني','مثلا','مثلاً','كيف حالك'];
+let items = [], reviewed = {}, view = [], cur = -1;
+
+const st = (id) => (reviewed[id] && reviewed[id].status) || 'pending';
+function esc(s) { return s.replace(/[&<>]/g, (c) => ({ '&':'&amp;', '<':'&lt;', '>':'&gt;' }[c])); }
+
+async function load() {
+  const d = await (await fetch('/api/items')).json();
+  items = d.items; reviewed = d.reviewed;
+  const sp = [...new Set(items.map((i) => i.speaker))].sort();
+  $('fSpeaker').innerHTML = '<option value="all">كل المتحدثين</option>' + sp.map((s) => `<option>${s}</option>`).join('');
+  refresh(true);
+}
+
+function counts() {
+  const k = items.filter((i) => st(i.id) === 'keep').length, dr = items.filter((i) => st(i.id) === 'drop').length;
+  $('cTotal').textContent = `الكل ${items.length}`;
+  $('cKeep').textContent = `معتمد ${k}`;
+  $('cDrop').textContent = `محذوف ${dr}`;
+  $('cLeft').textContent = `متبقٍ ${items.length - k - dr}`;
+}
+
+function refresh(select) {
+  const sp = $('fSpeaker').value, stt = $('fStatus').value;
+  const keepId = cur >= 0 && view[cur] ? view[cur].id : null;
+  view = items.filter((i) => (sp === 'all' || i.speaker === sp) && (stt === 'all' || st(i.id) === stt));
+  $('rows').innerHTML = view.map((i, n) => {
+    const s = st(i.id);
+    const txt = (reviewed[i.id] && reviewed[i.id].text) || i.text;
+    return `<div class="row" data-n="${n}"><span class="sp">${i.speaker}</span><span class="t">${esc(txt)}</span><span class="st-${s}">${s === 'keep' ? '✓' : s === 'drop' ? '✗' : ''}</span></div>`;
+  }).join('');
+  counts();
+  const idx = keepId ? view.findIndex((i) => i.id === keepId) : -1;
+  if (select || idx === -1) open(view.length ? Math.max(0, Math.min(cur, view.length - 1)) : -1);
+  else { cur = idx; mark(); }
+}
+
+function mark() { document.querySelectorAll('.row').forEach((r) => r.classList.toggle('cur', Number(r.dataset.n) === cur)); const r = document.querySelector('.row.cur'); if (r) r.scrollIntoView({ block: 'nearest' }); }
+
+function open(n) {
+  cur = n;
+  const has = n >= 0 && view[n];
+  $('empty').hidden = !!has; $('panel').hidden = !has;
+  if (!has) return;
+  const it = view[n];
+  $('meta').innerHTML = `<span>${it.speaker}</span><span>${it.duration} ث</span><span>${it.rate} حرف/ث</span>` + (it.snr_db != null ? `<span>SNR ${it.snr_db} dB</span>` : '') + `<span>${n + 1} / ${view.length}</span>`;
+  $('orig').textContent = it.whisper_text;
+  $('text').value = (reviewed[it.id] && reviewed[it.id].text) || it.text;
+  flags();
+  $('player').src = '/audio?id=' + encodeURIComponent(it.id);
+  $('player').playbackRate = Number($('speed').value);
+  $('player').play().catch(() => {});
+  mark();
+}
+
+function flags() {
+  const t = $('text').value;
+  const hit = SUSPECT.filter((w) => new RegExp('(^|\\s)' + w + '(\\s|[،.؟!]|$)').test(t));
+  $('flags').innerHTML = hit.length ? `<b>كلمات فصيحة مشتبهة:</b> ${hit.join('، ')} — تأكد أنها تُنطق هكذا فعلًا في المقطع (وإلا اكتبها كما تُنطق).` : '';
+}
+
+async function save(status) {
+  const it = view[cur]; if (!it) return;
+  const text = $('text').value.trim();
+  if (status === 'keep' && !text) { alert('النص فارغ.'); return false; }
+  reviewed[it.id] = { text, status };
+  await fetch('/api/save', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ id: it.id, text, status }) });
+  return true;
+}
+
+async function act(status) {
+  if (!(await save(status))) return;
+  const stt = $('fStatus').value;
+  // في عرض "لم تُراجَع" يختفي المقطع بعد الحفظ فيصبح التالي في نفس الموضع؛ وفي غيره ننتقل للتالي
+  if (stt !== 'pending') cur = cur + 1;
+  refresh(true);
+}
+
+$('rows').addEventListener('click', (e) => { const r = e.target.closest('.row'); if (r) open(Number(r.dataset.n)); });
+$('fSpeaker').onchange = () => { cur = 0; refresh(true); };
+$('fStatus').onchange = () => { cur = 0; refresh(true); };
+$('bKeep').onclick = () => act('keep');
+$('bDrop').onclick = () => act('drop');
+$('bReplay').onclick = () => { $('player').currentTime = 0; $('player').play(); };
+$('bReset').onclick = () => { $('text').value = view[cur].whisper_text; flags(); };
+$('bPrev').onclick = () => open(Math.max(0, cur - 1));
+$('bNext').onclick = () => open(Math.min(view.length - 1, cur + 1));
+$('speed').onchange = () => { $('player').playbackRate = Number($('speed').value); };
+$('text').addEventListener('input', flags);
+document.addEventListener('keydown', (e) => {
+  if (!e.altKey) return;
+  const k = e.key.toLowerCase();
+  if (k === 'k') { e.preventDefault(); act('keep'); }
+  else if (k === 'd') { e.preventDefault(); act('drop'); }
+  else if (k === 'r') { e.preventDefault(); $('bReplay').click(); }
+  else if (e.key === 'ArrowLeft') { e.preventDefault(); $('bNext').click(); }
+  else if (e.key === 'ArrowRight') { e.preventDefault(); $('bPrev').click(); }
+});
+load();
+</script>
+</body>
+</html>
